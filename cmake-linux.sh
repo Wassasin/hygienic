@@ -6,6 +6,5 @@ rm -rf build
 mkdir -p build
 pushd build
 CC="clang" CXX="clang++" cmake ..
-ln -s ../data
 popd
 
