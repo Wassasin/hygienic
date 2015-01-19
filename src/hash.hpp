@@ -7,7 +7,7 @@
 template<>
 struct std::hash<expr::expr_type_t>
 {
-	size_t operator()(expr::expr_type_t& t) const
+	size_t operator()(const expr::expr_type_t& t) const
 	{
 		switch(t)
 		{

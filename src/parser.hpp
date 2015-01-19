@@ -6,9 +6,9 @@
 
 class parser
 {
-	std::istream& is;
+	parser() = delete; // Private constructor
 
-	bool is_alpha(char c)
+	static bool is_alpha(char c)
 	{
 		return (
 			(c >= 'a' && c <= 'z') ||
@@ -16,27 +16,22 @@ class parser
 		);
 	}
 
-	bool eof()
-	{
-		return is.eof();
-	}
-
-	void assume(bool b)
+	static void assume(bool b)
 	{
 		if(!b)
 			throw std::runtime_error("Assumption failure");
 	}
 
-	bool read_term(char c)
+	static bool read_term(std::istream& is, char c)
 	{
-		if(eof() || is.peek() != c)
+		if(is.eof() || is.peek() != c)
 			return false;
 
 		is.get();
 		return true;
 	}
 
-	std::string read_var()
+	static std::string read_var(std::istream& is)
 	{
 		std::string result;
 
@@ -44,7 +39,7 @@ class parser
 		{
 			auto c = is.peek();
 
-			if(!is_alpha(c) || eof())
+			if(!is_alpha(c) || is.eof())
 				return result;
 
 			result.push_back(c);
@@ -53,27 +48,23 @@ class parser
 	}
 
 public:
-	parser(std::istream& is)
-		: is(is)
-	{}
-
-	expr_ptr read_expr()
+	static expr_ptr read_expr(std::istream& is)
 	{
-		std::string name = read_var();
+		std::string name = read_var(is);
 
-		if(!read_term('('))
+		if(!read_term(is, '('))
 			return std::make_shared<expr>(name);
 
 		std::vector<expr_ptr> subexprs;
 		bool first = true;
-		while(!read_term(')'))
+		while(!read_term(is, ')'))
 		{
 			if(first)
 				first = false;
 			else
-				assume(read_term(','));
+				assume(read_term(is, ','));
 
-			subexprs.emplace_back(read_expr());
+			subexprs.emplace_back(read_expr(is));
 		}
 
 		expr* ptr = new expr(std::move(name), std::move(subexprs));

@@ -5,6 +5,8 @@
 #include "expr.hpp"
 #include "hash_cache.hpp"
 
+/* Remembers expression printed before,
+ * and replaces these subexpressions with predetermined id's. */
 struct cse
 {
 	std::unordered_map<size_t, size_t> id_map;
@@ -14,21 +16,25 @@ struct cse
 	cse()
 		: id_map()
 		, hashes()
-		, i(1)
+		, i(1) // Stated by assignment (1-indexed)
 	{}
 
 	void print(expr_ptr e, std::ostream& os)
 	{
+		// Note: first call immediately adds all subnodes
 		size_t h = hashes.fetch_add(e);
-		auto it = id_map.find(h);
 
-		if(it != id_map.end())
 		{
-			os << it->second;
-			return;
+			auto it = id_map.find(h);
+			if(it != id_map.end())
+			{
+				os << it->second;
+				return;
+			}
 		}
 
-		size_t current_i = i++;
+		// Remember the id given to the current node
+		id_map.emplace(std::make_pair(h, i++));
 		os << e->name;
 
 		switch(e->type)
@@ -51,6 +57,7 @@ struct cse
 			break;
 		}
 
-		id_map.emplace(std::make_pair(h, current_i));
+		// Only register current node just after printing
+
 	}
 };
