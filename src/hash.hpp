@@ -4,8 +4,11 @@
 
 #include "expr.hpp"
 
+namespace std
+{
+
 template<>
-struct std::hash<expr::expr_type_t>
+struct hash<expr::expr_type_t>
 {
 	size_t operator()(const expr::expr_type_t& t) const
 	{
@@ -16,5 +19,9 @@ struct std::hash<expr::expr_type_t>
 		case expr::expr_type_t::ET_FUNCALL:
 			return 2;
 		}
+
+		return 0; // GCC does not have reachability analysis
 	}
 };
+
+}
