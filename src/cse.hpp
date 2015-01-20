@@ -56,8 +56,5 @@ struct cse
 			os << ')';
 			break;
 		}
-
-		// Only register current node just after printing
-
 	}
 };
