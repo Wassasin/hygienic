@@ -2,20 +2,15 @@
 
 #include <unordered_map>
 #include <tuple>
+#include <boost/functional/hash.hpp>
 
 #include "expr.hpp"
-#include "hash.hpp"
 
 /* Remembers for each expression visited it's hash.
  * By pointer of expression. */
 class hash_cache
 {
 	std::unordered_map<expr*, size_t> map;
-
-	static size_t combine(size_t h1, size_t h2)
-	{
-		return h1 * 101 + h2;
-	}
 
 public:
 	hash_cache()
@@ -32,15 +27,13 @@ public:
 		if(it != map.end())
 			return it->second;
 
-		size_t h1 = std::hash<expr::expr_type_t>()(e->type);
-		size_t h2 = std::hash<std::string>()(e->name);
-
-		size_t h3 = 0;
+		size_t h = 0;
+		boost::hash_combine(h, boost::hash_value(e->type));
+		boost::hash_combine(h, boost::hash_value(e->name));
 
 		for(auto se : e->subexprs)
-			h3 = combine(fetch_add(se), h3);
+			boost::hash_combine(h, fetch_add(se));
 
-		size_t h = combine(h1, combine(h2, h3));
 		map.emplace(std::make_pair(e.get(), h));
 		return h;
 	}
