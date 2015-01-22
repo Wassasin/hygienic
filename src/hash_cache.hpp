@@ -37,4 +37,13 @@ public:
 		map.emplace(std::make_pair(e.get(), h));
 		return h;
 	}
+
+	size_t fetch(expr_ptr e) const
+	{
+		auto it = map.find(e.get());
+		if(it != map.end())
+			return it->second;
+
+		throw std::runtime_error("Object is not in cache");
+	}
 };

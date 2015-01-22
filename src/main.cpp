@@ -21,11 +21,7 @@ int main()
 
 		const expr_ptr e(parser::read_expr(sstr));
 
-		{
-			cse c;
-			c.print(e, std::cout); // Print Common Subexpression Eliminated variant
-		}
-
+		cse::print(e, std::cout);
 		std::cout << std::endl; // Finish with newline
 	}
 
