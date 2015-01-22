@@ -37,9 +37,10 @@ class cse
 			)
 				return false;
 
-			for(size_t i = 0; i < lhs->subexprs.size(); i++)
-				if(!this->operator ()(lhs->subexprs[i], rhs->subexprs[i]))
-					return false;
+			if(lhs->type == expr::expr_type_t::ET_FUNCALL)
+				for(size_t i = 0; i < lhs->subexprs.size(); i++)
+					if(!this->operator ()(lhs->subexprs[i], rhs->subexprs[i]))
+						return false;
 
 			return true;
 		}

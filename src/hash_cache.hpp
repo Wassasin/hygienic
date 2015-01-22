@@ -31,8 +31,9 @@ public:
 		boost::hash_combine(h, boost::hash_value(e->type));
 		boost::hash_combine(h, boost::hash_value(e->name));
 
-		for(auto se : e->subexprs)
-			boost::hash_combine(h, fetch_add(se));
+		if(e->type == expr::expr_type_t::ET_FUNCALL)
+			for(auto se : e->subexprs)
+				boost::hash_combine(h, fetch_add(se));
 
 		map.emplace(std::make_pair(e.get(), h));
 		return h;
